@@ -341,6 +341,7 @@ export default function Home() {
             <KnowledgeGraph
               project={activeProject}
               onDocUpdate={handleDocUpdate}
+              onNodesUpdate={(nodes) => update({ nodes })}
               onFeaturesUpdate={(features: Feature[]) => update({ features })}
               onStackUpdate={(stackUpdate) => {
                 const current = activeProject.forge.stackDetail ?? {};
