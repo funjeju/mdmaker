@@ -1,962 +1,557 @@
-# 04_DESIGN_SYSTEM_ENGINE.md
+# GLOBAL_DESIGN_SYSTEM.md
 
-## Purpose
+## 디자인 철학
 
-Design System Engine은 프로젝트의 모든 UI/UX 설계, 디자인 자산, 컴포넌트 규칙, 화면 구조를 관리하는 엔진이다.
+본 서비스는 특정 페이지를 예쁘게 만드는 것이 목적이 아니다.
 
-본 엔진의 목표는 단순히 예쁜 디자인을 만드는 것이 아니라 PMF와 Feature를 가장 효과적으로 전달하는 사용자 경험을 설계하는 것이다.
+서비스 전체가
 
-모든 디자인은 Feature와 연결되어야 하며 독립적으로 존재할 수 없다.
+- 깔끔하고
+- 여유롭고
+- 직관적이며
+- 전문적이고
+- 신뢰감 있는
 
-또한 SpecForge는 단순 디자인 생성이 아닌, 레퍼런스 이미지와 경쟁 서비스 분석을 통해 Design DNA를 추출하고 이를 구현 가능한 시스템으로 변환하는 것을 목표로 한다.
+SaaS 제품처럼 느껴져야 한다.
 
----
+사용자가 어떤 페이지를 방문하더라도
 
-## Scope
+"잘 만들어진 서비스 같다"
 
-본 문서는 다음 영역을 정의한다.
-
-- Design Philosophy
-- Design Intelligence System
-- Design DNA System
-- Screenshot Analysis Engine
-- SaaS Design Framework
-- Design Token System
-- Component System
-- Landing Architecture System
-- User Experience System
-- AI Design Generation
-- Design Validation
-- Design Governance
+라는 인상을 받는 것이 최우선 목표다.
 
 ---
 
-## Dependencies
+# 핵심 디자인 키워드
 
-- 00_PROJECT_CONSTITUTION.md
-- 01_FORGELAUNCH_PROTOCOL.md
-- 02_PRODUCT_GRAPH_ENGINE.md
-- 03_DOCUMENT_GENERATION_ENGINE.md
+## Primary Keywords
+
+- Minimal
+- Spacious
+- Modern SaaS
+- Soft UI
+- Premium
+- Productivity First
 
 ---
 
-# Core Philosophy
-
-디자인은 장식이 아니다.
-
-디자인은 사용자가 목표를 달성하도록 돕는 시스템이다.
+## 사용자가 느껴야 하는 감정
 
 ```text
-PMF
+복잡하지 않다
 
-↓
+정돈되어 있다
 
-Feature
+신뢰가 간다
 
-↓
+가볍다
 
-UX
-
-↓
-
-UI
-
-↓
-
-Implementation
+사용하기 쉬워 보인다
 ```
 
-모든 디자인은 PMF를 강화해야 한다.
-
 ---
 
-# Design Intelligence System
+# 절대 금지 사항
 
-## Purpose
+## 사용 금지
 
-프로젝트 목적에 맞는 디자인 방향을 결정한다.
-
----
-
-## Inputs
+과한 디자인 요소
 
 ```text
-PMF
+네온 효과
 
-Target User
+강한 그라데이션
 
-Feature
+복잡한 패턴
 
-Business Goal
+유치한 일러스트
 
-Industry
+과도한 컬러 사용
 
-Competitors
-
-Reference Screenshots
+과한 애니메이션
 ```
 
 ---
 
-## Outputs
+## 사용 금지 구조
 
 ```text
-Design DNA
+빽빽한 화면
 
-UX Strategy
+좁은 여백
 
-Visual Strategy
+정보 과밀도
 
-Component Strategy
-
-Design Tokens
+복잡한 메뉴 구조
 ```
 
 ---
 
-# Screenshot Analysis Engine
+# 전체 레이아웃 규칙
 
-## Purpose
+## 화면 구성 원칙
 
-사용자가 제공한 디자인 이미지를 분석한다.
-
----
-
-## Analysis Targets
+모든 화면은
 
 ```text
-Layout Structure
-
-Visual Hierarchy
-
-Typography
-
-Color System
-
-Spacing System
-
-Component Patterns
-
-Interaction Patterns
-
-Conversion Strategy
+콘텐츠보다 여백을 먼저 설계한다
 ```
 
 ---
 
-## Extraction Flow
+## 최대 너비
+
+```css
+max-width:1400px;
+margin:auto;
+```
+
+---
+
+## 기본 패딩
+
+```css
+padding:24px;
+```
+
+---
+
+## 섹션 간격
+
+```css
+80~120px
+```
+
+---
+
+## 카드 간격
+
+```css
+24px
+```
+
+---
+
+# 공간 설계 원칙
+
+## 가장 중요한 규칙
+
+화면의 30~40%는 비워둔다.
+
+---
+
+잘못된 예
 
 ```text
-Screenshot
+■■■■■■■■■■■■■■■■■■■
 
-↓
+■■■■■■■■■■■■■■■■■■■
 
-Pattern Analysis
-
-↓
-
-Design DNA
-
-↓
-
-Component Mapping
-
-↓
-
-Design Token Creation
-
-↓
-
-UI Specification
+■■■■■■■■■■■■■■■■■■■
 ```
 
 ---
 
-# Design DNA System
-
-## Purpose
-
-프로젝트 고유의 디자인 정체성 정의
-
----
-
-## DNA Categories
-
-### Personality
+좋은 예
 
 ```text
-Professional
+■■■■■
 
-Trustworthy
+      ■■■■■■■
 
-Premium
-
-Modern
-
-Minimal
+■■■■■■■
 ```
 
 ---
 
-### Emotional Goal
+# 카드 시스템
+
+서비스 전반의 모든 정보는 카드 기반으로 표현한다.
+
+---
+
+## 카드 스타일
+
+```css
+background:#FFFFFF;
+
+border-radius:24px;
+
+border:1px solid #F1F5F9;
+
+box-shadow:
+0 8px 30px rgba(15,23,42,0.05);
+```
+
+---
+
+## Hover
+
+```css
+transform:translateY(-4px);
+```
+
+---
+
+## 내부 여백
+
+```css
+padding:24px;
+```
+
+---
+
+# 컴포넌트 디자인 원칙
+
+## 모든 컴포넌트는
 
 ```text
-Trust
+둥글게
 
-Confidence
+가볍게
 
-Clarity
+심플하게
+```
 
-Efficiency
+표현한다.
 
-Achievement
+---
+
+## Border Radius
+
+### 버튼
+
+```css
+12px
 ```
 
 ---
 
-### Visual Tone
+### 입력창
+
+```css
+14px
+```
+
+---
+
+### 카드
+
+```css
+24px
+```
+
+---
+
+### 모달
+
+```css
+28px
+```
+
+---
+
+# 대시보드 디자인 규칙
+
+대시보드는
 
 ```text
-Clean
+실제 데이터보다
 
-Airy
-
-Modern
-
-Elegant
-
-High Conversion
+보기 좋은 구조를 우선한다
 ```
 
 ---
 
-# AI SaaS Design Framework
-
-## Default Design Direction
-
-SpecForge 기본 SaaS 디자인 규칙
-
----
-
-## Visual Identity
-
-### Style
+## 카드 배치
 
 ```text
-Modern AI SaaS
+2열
+
+3열
+
+4열
 ```
+
+사용
 
 ---
 
-### Mood
+## 정보 표현
 
 ```text
-Premium
+차트
 
-Trustworthy
+칸반보드
 
-Simple
+타임라인
 
-Future Ready
+프로그레스바
+
+도넛차트
 ```
+
+우선 활용
 
 ---
 
-### Layout
+# UI 표현 방식
+
+텍스트보다 UI가 설명하도록 설계한다.
+
+---
+
+잘못된 예
 
 ```text
-Large Whitespace
-
-High Readability
-
-Card Based Layout
-
-Strong CTA Focus
+우리 서비스는 협업 기능을 제공합니다.
 ```
 
 ---
 
-### Visual Balance
+좋은 예
 
 ```text
-Text 40%
+실제 협업 UI
 
-Visual 60%
+팀원 아바타
+
+업무 상태
+
+프로젝트 진행률
 ```
+
+을 먼저 보여준다.
 
 ---
 
-# Color System
+# 컬러 시스템
 
-## Primary Palette
+## Primary
 
-```yaml
-primary:
-  deep_purple
-
-secondary:
-  indigo
-
-accent:
-  pink_purple_gradient
+```css
+#3B82F6
 ```
-
----
-
-## Neutral Palette
-
-```yaml
-background:
-  off_white
-
-surface:
-  white
-
-border:
-  light_gray
-
-text:
-  dark_gray
-```
-
----
-
-## Accent Palette
-
-```yaml
-success:
-warning:
-danger:
-info:
-```
-
----
-
-# Typography System
-
-## Heading
-
-```text
-Bold
-
-Large
-
-High Contrast
-```
-
----
-
-## Body
-
-```text
-Easy Reading
-
-Professional
-
-Minimal
-```
-
----
-
-## Hierarchy
-
-```text
-H1
-
-H2
-
-H3
-
-Body
-
-Caption
-```
-
----
-
-# Design Token System
-
-## Spacing Tokens
-
-```yaml
-xs:
-sm:
-md:
-lg:
-xl:
-xxl:
-```
-
----
-
-## Radius Tokens
-
-```yaml
-small:
-medium:
-large:
-pill:
-```
-
----
-
-## Shadow Tokens
-
-```yaml
-light:
-medium:
-large:
-floating:
-```
-
----
-
-# SaaS Landing Architecture
-
-## Standard Structure
-
-```text
-Navbar
-
-↓
-
-Hero
-
-↓
-
-Trust Layer
-
-↓
-
-Social Proof
-
-↓
-
-Feature Showcase
-
-↓
-
-Product Demo
-
-↓
-
-Benefits
-
-↓
-
-Pricing
-
-↓
-
-FAQ
-
-↓
 
 CTA
 
-↓
+활성 상태
 
-Footer
+선택 상태
+
+---
+
+## Success
+
+```css
+#22C55E
 ```
 
 ---
 
-# Hero Section Standard
+## Warning
 
-## Required Elements
+```css
+#F59E0B
+```
+
+---
+
+## Danger
+
+```css
+#EF4444
+```
+
+---
+
+## Background
+
+```css
+#FFFFFF
+```
+
+---
+
+## Secondary Background
+
+```css
+#F8FAFC
+```
+
+---
+
+## Border
+
+```css
+#E5E7EB
+```
+
+---
+
+## Text
+
+```css
+#0F172A
+```
+
+---
+
+## Sub Text
+
+```css
+#64748B
+```
+
+---
+
+# 타이포그래피
+
+## 페이지 제목
+
+```css
+font-size:56px;
+font-weight:700;
+letter-spacing:-0.04em;
+```
+
+---
+
+## 섹션 제목
+
+```css
+font-size:36px;
+font-weight:600;
+```
+
+---
+
+## 카드 제목
+
+```css
+font-size:24px;
+font-weight:600;
+```
+
+---
+
+## 본문
+
+```css
+font-size:16px;
+line-height:1.8;
+```
+
+---
+
+# 아이콘 규칙
+
+## 스타일
 
 ```text
-Headline
-
-Subheadline
-
-Primary CTA
-
-Secondary CTA
-
-Product Screenshot
-
-Trust Indicators
+Outline
 ```
+
+중심
 
 ---
 
-## Hero Goal
-
-사용자가 5초 안에
+## 사용 라이브러리
 
 ```text
-무엇인지
+Lucide
 
-누구를 위한 것인지
+Heroicons
 
-왜 써야 하는지
+Phosphor
 ```
 
-를 이해해야 한다.
+권장
 
 ---
 
-# Trust Layer System
+# 애니메이션
 
-## Purpose
+## 기본 철학
 
-신뢰 확보
+애니메이션은
+
+보여주기 위한 기능이 아니라
+
+부드러운 사용성을 위한 기능이다.
 
 ---
 
-## Components
+## 진입
+
+```css
+opacity:0 → 1
+
+translateY(20px) → 0
+```
+
+---
+
+## Hover
+
+```css
+translateY(-4px)
+```
+
+---
+
+## Duration
+
+```css
+200~300ms
+```
+
+---
+
+# 이미지 사용 원칙
+
+실사 사진보다
+
+서비스 UI를 우선 사용한다.
+
+---
+
+우선순위
 
 ```text
-Customer Logos
+1. 실제 UI
 
-Partner Logos
+2. 데이터 시각화
 
-Media Mentions
+3. 아이콘
 
-Security Indicators
+4. 일러스트
+
+5. 실사 사진
 ```
 
 ---
 
-## Position
+# 서비스 전체 디자인 한줄 정의
 
-Hero 바로 아래
+이 서비스는
 
----
+"노션 + 리니어 + 스트라이프 + 프레이머"
 
-# Social Proof System
+중간 어딘가에 위치한
 
-## Purpose
+현대적인 SaaS 스타일을 기준으로 한다.
 
-사용자 신뢰 확보
+모든 페이지와 컴포넌트는
 
----
+카드 중심
 
-## Components
+넓은 여백
 
-```text
-Reviews
+밝은 배경
 
-Testimonials
+부드러운 그림자
 
-User Count
+실제 서비스 UI 중심
 
-Customer Success Stories
-
-Ratings
-```
-
----
-
-# Feature Showcase System
-
-## Purpose
-
-기능 설명
-
----
-
-## Structure
-
-```text
-Problem
-
-↓
-
-Feature
-
-↓
-
-Benefit
-
-↓
-
-Proof
-```
-
----
-
-## Rule
-
-기능 나열 금지
-
-문제 해결 중심 설명
-
----
-
-# Product Demo System
-
-## Purpose
-
-제품 사용 모습을 보여준다.
-
----
-
-## Components
-
-```text
-Dashboard Preview
-
-AI Chat Window
-
-Analytics View
-
-Workflow Demo
-
-Mobile Preview
-```
-
----
-
-# Bento Grid System
-
-## Purpose
-
-기능 설명 최적화
-
----
-
-## Layout
-
-```text
-Feature Card
-
-Feature Card
-
-Feature Card
-
-Feature Card
-```
-
----
-
-## Characteristics
-
-```text
-Asymmetric
-
-Visual Focus
-
-High Scanability
-
-Modern SaaS Pattern
-```
-
----
-
-# Component System
-
-## Core Components
-
-```text
-Button
-
-Input
-
-Select
-
-Card
-
-Modal
-
-Tabs
-
-Table
-
-Navigation
-```
-
----
-
-## SaaS Components
-
-```text
-Hero Block
-
-Trust Bar
-
-Logo Cloud
-
-Feature Grid
-
-Bento Grid
-
-Demo Window
-
-Analytics Card
-
-Pricing Card
-
-Testimonial Card
-
-FAQ Accordion
-
-CTA Banner
-```
-
----
-
-# User Experience Engine
-
-## UX Principles
-
-### Principle 01
-
-최소 클릭
-
----
-
-### Principle 02
-
-최소 입력
-
----
-
-### Principle 03
-
-최소 학습
-
----
-
-### Principle 04
-
-명확한 피드백
-
----
-
-### Principle 05
-
-강한 CTA 유도
-
----
-
-# Feature Driven Design
-
-## Structure
-
-```text
-Feature
-
-↓
-
-User Flow
-
-↓
-
-Screen
-
-↓
-
-Component
-
-↓
-
-Implementation
-```
-
----
-
-# AI Design Generation Engine
-
-## Inputs
-
-```text
-PMF
-
-Feature
-
-User Flow
-
-Design DNA
-
-Reference Screenshots
-```
-
----
-
-## Outputs
-
-```text
-Wireframe
-
-Screen Layout
-
-Component Tree
-
-UI Specification
-
-Design Tokens
-```
-
----
-
-# Responsive Design Engine
-
-## Breakpoints
-
-```yaml
-mobile:
-tablet:
-desktop:
-wide:
-```
-
----
-
-## Rules
-
-### Mobile First
-
-필수
-
----
-
-### Responsive Components
-
-필수
-
----
-
-### Touch Optimization
-
-필수
-
----
-
-# Accessibility Engine
-
-## Requirements
-
-```text
-Keyboard Navigation
-
-Screen Reader
-
-Color Contrast
-
-Focus States
-
-Semantic HTML
-```
-
----
-
-# Design Validation Engine
-
-## Validation Targets
-
-```text
-PMF Alignment
-
-UX Consistency
-
-Conversion Optimization
-
-Component Consistency
-
-Accessibility
-
-Responsive Compatibility
-```
-
----
-
-# Design Governance
-
-## Rule 01
-
-Feature 없는 디자인 금지
-
----
-
-## Rule 02
-
-Reference 없는 디자인 생성 금지
-
----
-
-## Rule 03
-
-Design Token 미사용 금지
-
----
-
-## Rule 04
-
-Component 재사용 우선
-
----
-
-## Rule 05
-
-스크린샷 분석 없이 UI 생성 금지
-
----
-
-## Rule 06
-
-PMF와 무관한 디자인 금지
-
----
-
-# Design Deliverables
-
-## Required Outputs
-
-```text
-Design DNA
-
-Reference Analysis
-
-Screenshot Analysis
-
-Wireframe
-
-Landing Structure
-
-Component Library
-
-Screen Specification
-
-Interaction Specification
-
-Responsive Rules
-
-Accessibility Rules
-
-Implementation Guide
-```
-
----
-
-# Success Criteria
-
-```text
-□ PMF와 디자인 연결 완료
-
-□ Screenshot Analysis 구축 완료
-
-□ Design DNA 정의 완료
-
-□ SaaS Landing Architecture 정의 완료
-
-□ Component Library 구축 완료
-
-□ AI 기반 UI 생성 가능
-
-□ 개발 즉시 착수 가능
-
-□ 디자인-구현 간 차이 최소화
-```
-
----
-
-## Related Documents
-
-- 00_PROJECT_CONSTITUTION.md
-- 01_FORGELAUNCH_PROTOCOL.md
-- 02_PRODUCT_GRAPH_ENGINE.md
-- 03_DOCUMENT_GENERATION_ENGINE.md
-- 05_DEV_EXECUTION_ENGINE.md
-- 06_IMPLEMENTATION_ROADMAP.md
+이라는 원칙을 일관되게 유지해야 한다.
