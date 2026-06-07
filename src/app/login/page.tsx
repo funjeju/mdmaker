@@ -1,11 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
-  const { signInWithGoogle } = useAuth();
+  const { user, signInWithGoogle } = useAuth();
+  const router = useRouter();
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (user) router.replace("/");
+  }, [user, router]);
 
   async function handleGoogle() {
     setError("");
