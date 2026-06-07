@@ -153,11 +153,13 @@ export default function KnowledgeGraph({ project, onDocUpdate, onNodesUpdate, on
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes]);
 
+  const hasNodes = nodes.length > 0;
+
   return (
     <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
 
-      {/* ── LEFT: Feature Panel ───────────────────────────── */}
-      {showFeatures && (
+      {/* ── LEFT: Feature Panel (only when docs exist) ───── */}
+      {showFeatures && hasNodes && (
         <div style={{ width: 260, borderRight: "1px solid var(--border)", background: "var(--bg2)", display: "flex", flexDirection: "column", flexShrink: 0, overflow: "hidden" }}>
           <FeaturePanel
             features={project.features ?? []}
@@ -166,7 +168,8 @@ export default function KnowledgeGraph({ project, onDocUpdate, onNodesUpdate, on
         </div>
       )}
 
-      {/* ── CENTER: Graph ─────────────────────────────────── */}
+      {/* ── CENTER: Graph (only when docs exist) ──────────── */}
+      {hasNodes && (
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 0 }}>
         <div style={{ padding: "10px 16px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
           <button
@@ -176,7 +179,7 @@ export default function KnowledgeGraph({ project, onDocUpdate, onNodesUpdate, on
             ☰ Features
           </button>
           <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)" }}>Product Knowledge Graph</div>
-          <div style={{ fontSize: 11, color: "var(--text-muted)" }}>· {nodes.length}개 문서 생성됨</div>
+          <div style={{ fontSize: 11, color: "var(--text-muted)" }}>· 문서 {nodes.length}개</div>
         </div>
 
         <div ref={containerRef} style={{ flex: 1, position: "relative", overflow: "hidden", background: "var(--bg2)" }}>
@@ -260,14 +263,15 @@ export default function KnowledgeGraph({ project, onDocUpdate, onNodesUpdate, on
           )}
         </div>
       </div>
+      )}
 
       {/* ── RIGHT: AI Chat ────────────────────────────────── */}
-      <div style={{ width: 380, borderLeft: "1px solid var(--border)", display: "flex", flexDirection: "column", flexShrink: 0, background: "var(--bg)" }}>
+      <div style={{ width: hasNodes ? 380 : undefined, flex: hasNodes ? undefined : 1, borderLeft: hasNodes ? "1px solid var(--border)" : "none", display: "flex", flexDirection: "column", flexShrink: 0, background: "var(--bg)" }}>
         {/* Chat header */}
         <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border)", background: "var(--primary-light)", flexShrink: 0 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: "var(--primary)" }}>✦ Product Architect AI</div>
           <div style={{ fontSize: 11, color: "var(--text-sub)", marginTop: 2 }}>
-            {project.name} · 문서 {nodes.length}개 생성됨
+            {project.name}{hasNodes ? ` · 문서 ${nodes.length}개 생성됨` : " · 문서 구성 중"}
           </div>
         </div>
 
