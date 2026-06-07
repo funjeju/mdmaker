@@ -16,7 +16,7 @@ export function createProject(): Project {
     name: "",
     idea: "",
     stage: "forgelaunch",
-    forge: { step: 1, stack: "next", sequence: "prd", cloudDone: {} },
+    forge: { step: 1, stack: "next", stackDetail: { frontend: "next", database: "firebase", styling: "tailwind" }, sequence: "prd", cloudDone: {} },
     pmf: { problem: "", customer: "", value: "", market: "", timing: "", validated: false },
     features: [],
     nodes: DEFAULT_NODES,
@@ -36,7 +36,7 @@ export function lsLoad(): Project[] {
     return (JSON.parse(raw) as Project[]).map((p) => ({
       ...createProject(),
       ...p,
-      forge: p.forge ?? { step: 1 as const, stack: "next" as const, sequence: "prd" as const, cloudDone: {} },
+      forge: p.forge ?? { step: 1 as const, stack: "next", stackDetail: { frontend: "next", database: "firebase", styling: "tailwind" }, sequence: "prd" as const, cloudDone: {} },
       pmf: p.pmf ?? { problem: "", customer: "", value: "", market: "", timing: "", validated: false },
       nodes: p.nodes?.length ? p.nodes : DEFAULT_NODES,
     }));

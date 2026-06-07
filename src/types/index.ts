@@ -2,9 +2,16 @@ export type ProjectStage = "forgelaunch" | "pmf" | "graph";
 
 export type ForgeStep = 1 | 2 | 3 | 4;
 
+export interface ForgeStack {
+  frontend: string;
+  database: string;
+  styling: string;
+}
+
 export interface ForgeState {
   step: ForgeStep;
-  stack: "next" | "react" | "vue" | "skip";
+  stack: string; // legacy, kept for migration
+  stackDetail: ForgeStack;
   sequence: "prd" | "env";
   cloudDone: Record<number, boolean>;
 }

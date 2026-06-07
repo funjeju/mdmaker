@@ -118,9 +118,10 @@ export default function Home() {
   const [showNewModal, setShowNewModal] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
 
-  // Redirect to login if not authenticated
+  // Redirect to login if not authenticated (only after auth state resolved)
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (authLoading) return; // wait for getRedirectResult + onAuthStateChanged
+    if (!user) {
       router.replace("/login");
     }
   }, [user, authLoading, router]);
