@@ -306,6 +306,7 @@ export default function Home() {
             <KnowledgeGraph
               project={activeProject}
               onDocUpdate={handleDocUpdate}
+              onFeaturesUpdate={(features) => update({ features })}
             />
           )}
         </div>
