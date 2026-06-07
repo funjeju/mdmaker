@@ -15,6 +15,18 @@ const SYSTEM_PROMPT = `당신은 SpecForge의 문서 생성 AI입니다.
 (마크다운 내용)
 [/DOCUMENT]
 
+## 스택 감지 규칙
+대화 중 사용자가 특정 기술 스택을 언급하거나 문서 내용에서 명확한 스택이 확인되면,
+응답 어딘가에 아래 형식으로 포함하세요 (확실할 때만, 추측하지 말 것):
+
+[STACK]
+frontend: next | vite | react | vue | nuxt | svelte
+database: firebase | supabase | mongodb | prisma | planetscale
+styling: tailwind | shadcn | mui | chakra | styled | vanilla
+[/STACK]
+
+예시: 사용자가 "Next.js랑 Supabase로 만들어요"라고 하면 → frontend:next, database:supabase 업데이트
+
 ## 문서 타입별 포맷
 
 ### PRD
@@ -51,6 +63,7 @@ const SYSTEM_PROMPT = `당신은 SpecForge의 문서 생성 AI입니다.
 ### CLAUDE.md
 # Project Context
 ## Architecture
+## Tech Stack
 ## Features
 ## Rules
 
@@ -58,11 +71,15 @@ const SYSTEM_PROMPT = `당신은 SpecForge의 문서 생성 AI입니다.
 (cursor 에이전트를 위한 규칙 목록)`;
 
 export async function POST(req: NextRequest) {
-  const { messages, nodeType, nodeLabel } = await req.json();
+  const { messages, nodeType, nodeLabel, projectName, projectIdea } = await req.json();
 
   const model = client.getGenerativeModel({
     model: "gemini-2.5-flash",
-    systemInstruction: SYSTEM_PROMPT + `\n\n현재 생성할 문서 타입: ${nodeLabel ?? nodeType}`,
+    systemInstruction:
+      SYSTEM_PROMPT +
+      `\n\n현재 생성할 문서 타입: ${nodeLabel ?? nodeType}` +
+      (projectName ? `\n프로젝트명: ${projectName}` : "") +
+      (projectIdea ? `\n프로젝트 아이디어: ${projectIdea}` : ""),
   });
 
   const history = messages.slice(0, -1).map((m: { role: string; content: string }) => ({
@@ -70,9 +87,7 @@ export async function POST(req: NextRequest) {
     parts: [{ text: m.content }],
   }));
 
-  const lastMessage = messages.length === 0
-    ? "시작"
-    : messages[messages.length - 1].content;
+  const lastMessage = messages.length === 0 ? "시작" : messages[messages.length - 1].content;
 
   try {
     const chat = model.startChat({ history });
@@ -81,14 +96,30 @@ export async function POST(req: NextRequest) {
 
     let content = rawContent;
     let document: string | null = null;
+    let stackUpdate: Record<string, string> | null = null;
 
+    // Extract [DOCUMENT] block
     const docMatch = content.match(/\[DOCUMENT\]([\s\S]*?)\[\/DOCUMENT\]/);
     if (docMatch) {
       document = docMatch[1].trim();
       content = content.replace(docMatch[0], "").trim();
     }
 
-    return NextResponse.json({ content, document });
+    // Extract [STACK] block
+    const stackMatch = content.match(/\[STACK\]([\s\S]*?)\[\/STACK\]/);
+    if (stackMatch) {
+      stackUpdate = {};
+      const lines = stackMatch[1].trim().split("\n");
+      for (const line of lines) {
+        const [key, val] = line.split(":").map((s) => s.trim());
+        if (key && val && ["frontend", "database", "styling"].includes(key)) {
+          stackUpdate[key] = val;
+        }
+      }
+      content = content.replace(stackMatch[0], "").trim();
+    }
+
+    return NextResponse.json({ content, document, stackUpdate });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "AI 응답 오류" }, { status: 500 });

@@ -20,9 +20,10 @@ interface Props {
   project: Project;
   onDocUpdate: (nodeId: string, doc: string) => void;
   onFeaturesUpdate?: (features: Feature[]) => void;
+  onStackUpdate?: (stackUpdate: Record<string, string>) => void;
 }
 
-export default function KnowledgeGraph({ project, onDocUpdate, onFeaturesUpdate }: Props) {
+export default function KnowledgeGraph({ project, onDocUpdate, onFeaturesUpdate, onStackUpdate }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>({});
@@ -35,6 +36,7 @@ export default function KnowledgeGraph({ project, onDocUpdate, onFeaturesUpdate 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [stackNotice, setStackNotice] = useState<Record<string, string> | null>(null);
 
   // Left panel: feature management
   const [showFeatures, setShowFeatures] = useState(true);
@@ -114,6 +116,11 @@ export default function KnowledgeGraph({ project, onDocUpdate, onFeaturesUpdate 
       setMessages([...newMsgs, { role: "assistant", content: data.content }]);
       if (data.document) {
         onDocUpdate(chatNode.id, data.document);
+      }
+      if (data.stackUpdate && Object.keys(data.stackUpdate).length > 0) {
+        onStackUpdate?.(data.stackUpdate);
+        setStackNotice(data.stackUpdate);
+        setTimeout(() => setStackNotice(null), 5000);
       }
     } catch {
       setMessages([...newMsgs, { role: "assistant", content: "오류가 발생했습니다. 다시 시도해주세요." }]);
@@ -404,6 +411,32 @@ export default function KnowledgeGraph({ project, onDocUpdate, onFeaturesUpdate 
           background: "var(--bg)",
           flexShrink: 0,
         }}>
+          {/* Stack update toast */}
+          {stackNotice && (
+            <div style={{
+              position: "absolute", bottom: 80, right: 400, zIndex: 50,
+              background: "var(--bg)", border: "1.5px solid var(--primary)",
+              borderRadius: 14, padding: "12px 16px",
+              boxShadow: "var(--shadow-lg)", maxWidth: 280,
+              animation: "fadeIn 0.2s ease",
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "var(--primary)", marginBottom: 6 }}>
+                ⚡ AI가 스택을 감지했습니다
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                {Object.entries(stackNotice).map(([k, v]) => (
+                  <div key={k} style={{ fontSize: 12, color: "var(--text)" }}>
+                    <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>{k}: </span>
+                    <span style={{ color: "var(--primary)", fontWeight: 700 }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 6 }}>
+                → ForgeLaunch 스택 설정에 자동 반영됨
+              </div>
+            </div>
+          )}
+
           {/* Panel header */}
           <div style={{
             padding: "14px 18px",

@@ -1,4 +1,22 @@
-export type ProjectStage = "forgelaunch" | "pmf" | "graph";
+export type ProjectStage = "dashboard" | "forgelaunch" | "pmf" | "graph";
+
+export interface AccountInfo {
+  github: { username: string; repoUrl: string; };
+  firebase: { projectId: string; };
+  vercel: { projectUrl: string; };
+  geminiKey: string;
+  anthropicKey: string;
+  tools: { node: string; git: string; vscode: boolean; };
+  defaultStack: { frontend: string; database: string; styling: string; };
+}
+
+export type ChecklistStatus = "green" | "yellow" | "red";
+
+export interface ChecklistItem {
+  id: string;
+  status: ChecklistStatus;
+  note: string;
+}
 
 export type ForgeStep = 1 | 2 | 3 | 4;
 
@@ -58,6 +76,7 @@ export interface Project {
   pmf: PMFState;
   features: Feature[];
   nodes: GraphNode[];
+  checklist: ChecklistItem[];
   createdAt: number;
   updatedAt: number;
 }

@@ -3,9 +3,10 @@
 import { Project, ProjectStage } from "@/types";
 
 const STAGES: { key: ProjectStage; label: string; emoji: string }[] = [
+  { key: "dashboard",   label: "대시보드",     emoji: "📊" },
   { key: "forgelaunch", label: "ForgeLaunch", emoji: "🚀" },
-  { key: "pmf", label: "PMF 검증", emoji: "🎯" },
-  { key: "graph", label: "Product Graph", emoji: "🧩" },
+  { key: "pmf",         label: "PMF 검증",    emoji: "🎯" },
+  { key: "graph",       label: "Product Graph", emoji: "🧩" },
 ];
 
 interface Props {
