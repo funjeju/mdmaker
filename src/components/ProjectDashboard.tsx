@@ -94,11 +94,12 @@ interface Props {
   project: Project;
   account: AccountInfo;
   onChecklistUpdate: (checklist: ChecklistItem[]) => void;
+  onAccountUpdate: (account: AccountInfo) => void;
   onNavigate: (stage: ProjectStage) => void;
   onOpenSettings: () => void;
 }
 
-export default function ProjectDashboard({ project, account, onChecklistUpdate, onNavigate, onOpenSettings }: Props) {
+export default function ProjectDashboard({ project, account, onChecklistUpdate, onAccountUpdate, onNavigate, onOpenSettings }: Props) {
   const checklist = project.checklist ?? [];
   const autoMap = autoDetect(project, account);
 
@@ -117,6 +118,11 @@ export default function ProjectDashboard({ project, account, onChecklistUpdate, 
       ? checklist.map((c) => c.id === id ? { ...c, status: next } : c)
       : [...checklist, { id, status: next, note: "" }];
     onChecklistUpdate(updated);
+  }
+
+  function markToolInstalled(tool: "node" | "git" | "vscode") {
+    const updated = { ...account, tools: { ...account.tools, [tool]: tool === "vscode" ? true : "installed" } };
+    onAccountUpdate(updated as AccountInfo);
   }
 
   // Stats
@@ -313,19 +319,33 @@ export default function ProjectDashboard({ project, account, onChecklistUpdate, 
                       관리 →
                     </button>
                   ) : def.actionUrl ? (
-                    <a
-                      href={def.actionUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        padding: "4px 10px", background: "var(--bg2)",
-                        color: "var(--text-sub)", border: "1px solid var(--border)", borderRadius: 6,
-                        fontSize: 11, fontWeight: 600, cursor: "pointer", flexShrink: 0,
-                        textDecoration: "none",
-                      }}
-                    >
-                      {def.actionLabel} ↗
-                    </a>
+                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                      {(def.id === "node" || def.id === "git" || def.id === "vscode") && status !== "green" && (
+                        <button
+                          onClick={() => markToolInstalled(def.id as "node" | "git" | "vscode")}
+                          style={{
+                            padding: "4px 10px", background: "#F0FDF4",
+                            color: "#16A34A", border: "1px solid #86EFAC", borderRadius: 6,
+                            fontSize: 11, fontWeight: 600, cursor: "pointer", flexShrink: 0,
+                          }}
+                        >
+                          ✓ 설치됨
+                        </button>
+                      )}
+                      <a
+                        href={def.actionUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          padding: "4px 10px", background: "var(--bg2)",
+                          color: "var(--text-sub)", border: "1px solid var(--border)", borderRadius: 6,
+                          fontSize: 11, fontWeight: 600, cursor: "pointer", flexShrink: 0,
+                          textDecoration: "none",
+                        }}
+                      >
+                        {def.actionLabel} ↗
+                      </a>
+                    </div>
                   ) : null}
                 </div>
               );

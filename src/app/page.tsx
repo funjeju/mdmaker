@@ -320,6 +320,7 @@ export default function Home() {
               project={activeProject}
               account={account}
               onChecklistUpdate={(checklist: ChecklistItem[]) => update({ checklist })}
+              onAccountUpdate={(a: AccountInfo) => { setAccount(a); lsSaveAccount(a); }}
               onNavigate={(stage: ProjectStage) => update({ stage })}
               onOpenSettings={() => setShowSettings(true)}
             />
