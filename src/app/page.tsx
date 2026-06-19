@@ -189,6 +189,7 @@ export default function Home() {
   const [showNewModal, setShowNewModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
+  const [syncError, setSyncError] = useState<string | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
@@ -211,7 +212,9 @@ export default function Home() {
             lsSave([]);
           }
         }
-      } catch {
+      } catch (e) {
+        console.error("loadProjects failed", e);
+        setSyncError("클라우드에서 프로젝트를 불러오지 못했습니다. 로컬에 저장된 내용을 표시합니다.");
         const ls = lsLoad();
         setProjects(ls);
         if (ls.length > 0) setActiveId(ls[0].id);
@@ -230,8 +233,16 @@ export default function Home() {
         p.id === activeId ? { ...p, ...partial, updatedAt: Date.now() } : p
       );
       const updated = next.find((p) => p.id === activeId);
-      if (updated && user) saveProject(user.uid, updated).catch(console.error);
-      else if (updated) lsSave(next);
+      if (updated && user) {
+        saveProject(user.uid, updated).then(
+          () => setSyncError(null),
+          (e) => {
+            console.error("saveProject failed", e);
+            setSyncError("클라우드 저장에 실패했습니다. 로컬에 백업했습니다.");
+            lsSave(next); // 저장 실패 시 데이터 유실 방지
+          }
+        );
+      } else if (updated) lsSave(next);
       return next;
     });
   }, [activeId, user]);
@@ -243,8 +254,16 @@ export default function Home() {
     p.forge.stackDetail = { ...stack };
     const next = [p, ...projects];
     setProjects(next); setActiveId(p.id); setShowNewModal(false);
-    if (user) await saveProject(user.uid, p).catch(console.error);
-    else lsSave(next);
+    if (user) {
+      try {
+        await saveProject(user.uid, p);
+        setSyncError(null);
+      } catch (e) {
+        console.error("saveProject failed", e);
+        setSyncError("클라우드 저장에 실패했습니다. 로컬에 백업했습니다.");
+        lsSave(next);
+      }
+    } else lsSave(next);
   }
 
   async function handleDelete(id: string) {
@@ -292,6 +311,13 @@ export default function Home() {
 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <TopBar project={activeProject} onStageChange={(stage) => update({ stage })} />
+
+        {syncError && (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "10px 16px", background: "rgba(239,68,68,0.1)", borderBottom: "1px solid rgba(239,68,68,0.3)", color: "#dc2626", fontSize: 13 }}>
+            <span>⚠️ {syncError}</span>
+            <button onClick={() => setSyncError(null)} style={{ background: "none", border: "none", color: "#dc2626", cursor: "pointer", fontSize: 13 }}>✕</button>
+          </div>
+        )}
 
         <div style={{ flex: 1, overflow: "hidden", display: "flex" }}>
           {dataLoading ? (
