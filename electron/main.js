@@ -12,6 +12,7 @@ const PROD_PORT = 41234;
 let serverProc = null;
 
 // 배포 모드: resources/standalone/server.js 를 내장 node로 실행하고 준비될 때까지 대기
+// HOSTNAME은 localhost로 — Firebase Auth 승인 도메인 기본값이 localhost라 127.0.0.1은 거부됨
 function startStandaloneServer() {
   return new Promise((resolve, reject) => {
     const dir = path.join(process.resourcesPath, "standalone");
@@ -22,12 +23,12 @@ function startStandaloneServer() {
         ...process.env,
         ELECTRON_RUN_AS_NODE: "1",
         PORT: String(PROD_PORT),
-        HOSTNAME: "127.0.0.1",
+        HOSTNAME: "localhost",
       },
     });
     serverProc.on("error", reject);
 
-    const url = `http://127.0.0.1:${PROD_PORT}`;
+    const url = `http://localhost:${PROD_PORT}`;
     const deadline = Date.now() + 20000;
     const ping = () => {
       http
@@ -57,8 +58,12 @@ function createWindow(targetUrl) {
 
   win.loadURL(targetUrl);
 
-  // 외부 링크(target=_blank)는 기본 브라우저로
   win.webContents.setWindowOpenHandler(({ url }) => {
+    // Firebase/Google 로그인 팝업은 앱 내부 창으로 허용 (외부 브라우저로 보내면 인증이 깨짐)
+    if (/(firebaseapp\.com|accounts\.google\.com|google\.com\/o\/oauth2|googleapis\.com)/.test(url)) {
+      return { action: "allow" };
+    }
+    // 그 외 외부 링크(다운로드·접속 버튼 등)는 기본 브라우저로
     shell.openExternal(url);
     return { action: "deny" };
   });
