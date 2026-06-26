@@ -1,6 +1,7 @@
 "use client";
 
 import { Project, ChecklistItem, ChecklistStatus, AccountInfo, ProjectStage } from "@/types";
+import DevEnvPanel from "./DevEnvPanel";
 
 // ─── Checklist definition ─────────────────────────────────────────────────────
 
@@ -35,32 +36,6 @@ const CHECKLIST_DEFS: ChecklistDef[] = [
 ];
 
 const CATEGORY_ORDER = ["환경", "계정", "키", "프로젝트", "문서"] as const;
-
-// ─── Stack structure + quick links ────────────────────────────────────────────
-
-interface LinkDef {
-  id: string;
-  icon: string;
-  name: string;
-  desc: string;
-  url: string;
-  cta: string;
-  accent: string;
-}
-
-// 📥 설치 파일을 받는 링크 (로컬 개발 도구)
-const DOWNLOAD_LINKS: LinkDef[] = [
-  { id: "node",   icon: "🟩", name: "Node.js",  desc: "JS 런타임 · LTS 버전", url: "https://nodejs.org/ko/download",        cta: "다운로드", accent: "#16A34A" },
-  { id: "git",    icon: "🐙", name: "Git",      desc: "버전 관리",            url: "https://git-scm.com/downloads",          cta: "다운로드", accent: "#F05133" },
-  { id: "vscode", icon: "💻", name: "VS Code",  desc: "코드 편집기",          url: "https://code.visualstudio.com/download", cta: "다운로드", accent: "#2563EB" },
-];
-
-// 🔗 접속 / 로그인해서 프로젝트를 만드는 링크 (클라우드 서비스)
-const ACCESS_LINKS: LinkDef[] = [
-  { id: "github",   icon: "🐱", name: "GitHub",   desc: "코드 저장소 생성",        url: "https://github.com/new",                  cta: "접속·생성", accent: "#24292F" },
-  { id: "vercel",   icon: "▲",  name: "Vercel",   desc: "배포 · 호스팅",          url: "https://vercel.com/new",                  cta: "접속·생성", accent: "#000000" },
-  { id: "firebase", icon: "🔥", name: "Firebase", desc: "Auth · DB · 백엔드",     url: "https://console.firebase.google.com/",    cta: "접속·생성", accent: "#F59E0B" },
-];
 
 // ─── Traffic light ────────────────────────────────────────────────────────────
 
@@ -232,56 +207,11 @@ export default function ProjectDashboard({ project, account, onChecklistUpdate, 
           ))}
         </div>
 
-        {/* Two link groups */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-          {[
-            { title: "📥 다운로드 — 설치하기", hint: "클릭하면 설치 파일 다운로드", links: DOWNLOAD_LINKS },
-            { title: "🔗 접속 & 로그인 — 프로젝트 생성", hint: "클릭하면 바로 접속·생성", links: ACCESS_LINKS },
-          ].map((group) => (
-            <div key={group.title}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-sub)", marginBottom: 4 }}>
-                {group.title}
-              </div>
-              <div style={{ fontSize: 10, color: "var(--text-muted)", marginBottom: 10 }}>{group.hint}</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {group.links.map((l) => (
-                  <a
-                    key={l.id}
-                    href={l.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: "flex", alignItems: "center", gap: 12,
-                      padding: "10px 14px", background: "var(--bg2)",
-                      border: "1px solid var(--border)", borderRadius: 12,
-                      textDecoration: "none", transition: "all 0.15s",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = l.accent;
-                      e.currentTarget.style.background = "var(--bg)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = "var(--border)";
-                      e.currentTarget.style.background = "var(--bg2)";
-                    }}
-                  >
-                    <div style={{ fontSize: 20 }}>{l.icon}</div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text)" }}>{l.name}</div>
-                      <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{l.desc}</div>
-                    </div>
-                    <div style={{
-                      fontSize: 11, fontWeight: 700, padding: "5px 12px", borderRadius: 8,
-                      background: l.accent, color: "#fff", flexShrink: 0, whiteSpace: "nowrap",
-                    }}>
-                      {l.cta} ↗
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+      </div>
+
+      {/* 개발환경 구축 — 설치 감지 · 접속 생성 · API 키 금고 */}
+      <div style={{ marginBottom: 24 }}>
+        <DevEnvPanel />
       </div>
 
       {/* Progress bar */}
