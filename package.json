@@ -15,11 +15,12 @@
   "build": {
     "appId": "com.specforge.app",
     "productName": "SpecForge",
+    "afterPack": "electron/after-pack.js",
     "files": [
       "electron/**/*"
     ],
     "extraResources": [
-      { "from": ".next/standalone", "to": "standalone" }
+      { "from": ".next/standalone", "to": "standalone", "filter": ["**/*"] }
     ],
     "win": {
       "target": "nsis"
