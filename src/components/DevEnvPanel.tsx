@@ -155,31 +155,51 @@ export default function DevEnvPanel() {
         })}
       </div>
 
-      {/* ── 2. 접속 & 생성 다이렉트 링크 ─────────────────── */}
+      {/* ── 2. 접속 & 생성 + 내 프로젝트 바로가기 ─────────── */}
       <div style={card}>
-        <div style={head}><span style={headTitle}>🔗 접속 & 생성 — 로그인 후 바로 만들기</span></div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 0 }}>
-          {ACCESS_LINKS.map((l) => (
-            <button
-              key={l.id}
-              onClick={() => bridge.openExternal(l.url)}
-              style={{
-                display: "flex", alignItems: "center", gap: 10, padding: "14px 16px",
-                borderRight: "1px solid var(--bg2)", borderBottom: "1px solid var(--bg2)",
-                background: "var(--bg)", cursor: "pointer", textAlign: "left",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg2)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "var(--bg)")}
-            >
-              <div style={{ fontSize: 20 }}>{l.icon}</div>
-              <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={head}>
+          <span style={headTitle}>🔗 접속 & 생성 — 처음엔 생성, 주소 넣으면 바로가기</span>
+        </div>
+        {ACCESS_LINKS.map((l) => {
+          const linkKey = `link_${l.id}`;
+          const saved = (keys[linkKey] || "").trim();
+          return (
+            <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 16px", borderBottom: "1px solid var(--bg2)" }}>
+              <div style={{ fontSize: 18 }}>{l.icon}</div>
+              <div style={{ width: 120, flexShrink: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text)" }}>{l.name}</div>
                 <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{l.desc}</div>
               </div>
-              <span style={{ fontSize: 12, color: l.accent, fontWeight: 700 }}>↗</span>
-            </button>
-          ))}
-        </div>
+              <input
+                value={keys[linkKey] || ""}
+                onChange={(e) => updateKey(linkKey, e.target.value)}
+                placeholder="내 프로젝트 주소 붙여넣기 (비우면 생성 페이지로)"
+                style={{
+                  flex: 1, minWidth: 0, padding: "6px 10px", borderRadius: 8,
+                  border: "1px solid var(--border)", background: "var(--bg2)",
+                  color: "var(--text)", fontSize: 12,
+                }}
+              />
+              {saved ? (
+                <>
+                  <button onClick={() => bridge.openExternal(saved)}
+                    style={{ padding: "6px 12px", borderRadius: 8, border: "none", background: l.accent, color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+                    바로가기 ↗
+                  </button>
+                  <button onClick={() => bridge.openExternal(l.url)} title="새로 생성"
+                    style={{ padding: "6px 9px", borderRadius: 8, border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text-sub)", fontSize: 11, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+                    + 새로
+                  </button>
+                </>
+              ) : (
+                <button onClick={() => bridge.openExternal(l.url)}
+                  style={{ padding: "6px 12px", borderRadius: 8, border: "none", background: l.accent, color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+                  생성하러 가기 ↗
+                </button>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* ── 3. API 키 금고 + .env.local 주입 ──────────────── */}
