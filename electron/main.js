@@ -1,13 +1,47 @@
 const { app, BrowserWindow, ipcMain, shell } = require("electron");
 const path = require("path");
+const http = require("http");
+const { spawn } = require("child_process");
 const { detectAll, detectTool } = require("./detect");
 const vault = require("./vault");
 
-// 개발 모드: next dev 서버, 배포 모드: 호스팅된 URL(필요 시 교체)
+// 개발: next dev 서버 / 배포: 내장 standalone 서버를 직접 띄움
 const DEV_URL = process.env.ELECTRON_START_URL || "http://localhost:3000";
-const PROD_URL = process.env.ELECTRON_PROD_URL || "http://localhost:3000";
+const PROD_PORT = 41234;
 
-function createWindow() {
+let serverProc = null;
+
+// 배포 모드: resources/standalone/server.js 를 내장 node로 실행하고 준비될 때까지 대기
+function startStandaloneServer() {
+  return new Promise((resolve, reject) => {
+    const dir = path.join(process.resourcesPath, "standalone");
+    const serverJs = path.join(dir, "server.js");
+    serverProc = spawn(process.execPath, [serverJs], {
+      cwd: dir,
+      env: {
+        ...process.env,
+        ELECTRON_RUN_AS_NODE: "1",
+        PORT: String(PROD_PORT),
+        HOSTNAME: "127.0.0.1",
+      },
+    });
+    serverProc.on("error", reject);
+
+    const url = `http://127.0.0.1:${PROD_PORT}`;
+    const deadline = Date.now() + 20000;
+    const ping = () => {
+      http
+        .get(url, () => resolve(url))
+        .on("error", () => {
+          if (Date.now() > deadline) reject(new Error("standalone server timeout"));
+          else setTimeout(ping, 300);
+        });
+    };
+    setTimeout(ping, 500);
+  });
+}
+
+function createWindow(targetUrl) {
   const win = new BrowserWindow({
     width: 1320,
     height: 880,
@@ -21,7 +55,7 @@ function createWindow() {
     },
   });
 
-  win.loadURL(app.isPackaged ? PROD_URL : DEV_URL);
+  win.loadURL(targetUrl);
 
   // 외부 링크(target=_blank)는 기본 브라우저로
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -44,13 +78,25 @@ ipcMain.handle("env:write", async (_e, { dir, vars }) => {
 });
 ipcMain.handle("open:external", (_e, url) => shell.openExternal(url));
 
-app.whenReady().then(() => {
-  createWindow();
+app.whenReady().then(async () => {
+  let targetUrl = DEV_URL;
+  if (app.isPackaged) {
+    try {
+      targetUrl = await startStandaloneServer();
+    } catch (e) {
+      console.error("내장 서버 시작 실패:", e);
+    }
+  }
+  createWindow(targetUrl);
   app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) createWindow(targetUrl);
   });
 });
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
+});
+
+app.on("quit", () => {
+  if (serverProc) serverProc.kill();
 });

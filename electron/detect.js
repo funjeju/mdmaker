@@ -46,6 +46,17 @@ function versionFromPackageJson(exePath) {
   return null;
 }
 
+// Windows exe 파일 메타데이터(ProductVersion)에서 버전 읽기 — asar로 패킹된 앱(Antigravity 등) 대응
+async function versionFromExe(exePath) {
+  if (process.platform !== "win32") return null;
+  const safe = exePath.replace(/'/g, "''");
+  const out = await run(
+    `powershell -NoProfile -Command "(Get-Item '${safe}').VersionInfo.ProductVersion"`,
+    6000
+  );
+  return extractVersion(out);
+}
+
 // 도구별 감지 설정: 명령 우선, 없으면 설치 경로 스캔
 const TOOLS = {
   node: {
@@ -99,10 +110,12 @@ async function detectTool(id) {
   for (const raw of cfg.paths || []) {
     const full = expand(raw);
     if (full && fs.existsSync(full)) {
+      let version = versionFromPackageJson(full);
+      if (!version && /\.exe$/i.test(full)) version = await versionFromExe(full);
       return {
         id,
         installed: true,
-        version: versionFromPackageJson(full) || "unknown",
+        version: version || "unknown",
         source: "path",
         path: full,
       };

@@ -17,9 +17,16 @@ npm run electron:dev
 npm run electron:build
 ```
 
-- 결과물은 `dist/`에 생성됩니다(Windows NSIS 인스톨러).
-- 배포용 exe가 어떤 화면을 로드할지는 환경변수로 지정합니다:
-  - `ELECTRON_PROD_URL` = 호스팅된 주소(예: Vercel 배포 URL). 미지정 시 localhost:3000.
+내부적으로 `next build` → `prepare-standalone.js`(static·public·.env.local 복사) → `electron-builder` 순으로 실행됩니다.
+결과물은 `dist/`에 NSIS 인스톨러로 생성됩니다.
+
+### 자체 포함형(self-contained) 동작
+배포 exe는 외부 URL이 필요 없습니다. 앱이 켜지면 내장된 **Next standalone 서버**(`resources/standalone/server.js`)를
+Electron 내장 node로 `127.0.0.1:41234`에 띄우고 그 화면을 로드합니다. 별도 dev 서버나 인터넷 주소 설정이 필요 없습니다.
+(Firebase/AI API 호출 자체는 당연히 인터넷이 필요합니다.)
+
+> ⚠️ **보안 주의:** 빌드 시 `.env.local`이 exe 안에 포함됩니다(서버측 시크릿: `FIREBASE_ADMIN_PRIVATE_KEY`, `GEMINI_API_KEY` 등).
+> 본인 PC 전용으로만 쓰고, 이 exe를 **타인에게 배포하지 마세요.** 배포가 필요하면 시크릿을 분리해야 합니다.
 
 ## 데스크톱에서만 동작하는 기능
 
